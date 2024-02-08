@@ -1,1 +1,6 @@
 # r-music-analysis
+
+This code uses R to analyze whether or not Taylor Swift albums all sound the same. I used data from the Tidy Tuesday Github repository (R4DS Online Learning Community (2023). Tidy Tuesday: A weekly social data project. https://github.com/rfordatascience/tidytuesday).
+
+Most of my process is illustrated in the Rmd file. My conclusion from this project is that the sound of Taylor Swift's are actually significantly different in terms of how they sound overall. They are not all the same in terms of valence, energy, and danceability, which are important factors in how songs sound. These factors were from Spotify's metrics for songs. Some next steps for this project could be to compare how the songs sound WITHIN different albums, and see if the overall sound of all the songs within an album is similar or different. I could also try to characterize the sound of Swift's different albums (e.g combining their average metrics for valence, danceability, energy, etc) to define the vibe of the album. It would be interesting to extend music analysis to the album's of other artists as well, or to produce other metrics for measuring how a song sounds besides the ones provided by Spotify (perhaps metrics measuring lyric redundancy within a song, the primary emotion conveyed by a song, and how much loudness varies within a song). 
+
