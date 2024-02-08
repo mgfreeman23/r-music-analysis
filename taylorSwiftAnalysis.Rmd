@@ -1,0 +1,188 @@
+---
+title: "taylor-swift-music-analysis"
+author: "Malina Freeman"
+date: "2024-02-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## R Markdown - Taylor Swift Music Analysis
+
+#### Question: Do All Taylor Swift Songs Actually Sound the Same?
+
+Imports the data set from my files and views it
+
+```{r}
+taylor_album_songs <- read.csv("C:/Users/malin/Downloads/taylor_album_songs.csv")
+View(taylor_album_songs)
+```
+
+Use the glimpse function to get a better idea of categories of data set
+
+```{r}
+glimpse(taylor_album_songs)
+```
+
+Finding average of various song metrics
+
+```{r}
+mean(taylor_album_songs$danceability, na.rm = TRUE)
+mean(taylor_album_songs$acousticness, na.rm = TRUE)
+mean(taylor_album_songs$loudness, na.rm = TRUE)
+mean(taylor_album_songs$energy, na.rm = TRUE)
+```
+Summarizing each category for data
+
+```{r}
+summary(taylor_album_songs)
+```
+
+Removing null values in categories of interest
+
+```{r}
+taylor_album_songs$danceability <-ifelse(is.na(taylor_album_songs$danceability),
+    median(taylor_album_songs$danceability, na.rm = TRUE),
+    taylor_album_songs$danceability)
+taylor_album_songs$loudness <-ifelse(is.na(taylor_album_songs$loudness),
+    median(taylor_album_songs$loudness, na.rm = TRUE),
+    taylor_album_songs$loudness)
+taylor_album_songs$acousticness <-ifelse(is.na(taylor_album_songs$acousticness),
+    median(taylor_album_songs$acousticness, na.rm = TRUE),
+    taylor_album_songs$acousticness)
+taylor_album_songs$energy <-ifelse(is.na(taylor_album_songs$energy),
+    median(taylor_album_songs$energy, na.rm = TRUE),
+    taylor_album_songs$energy)
+taylor_album_songs$instrumentalness <-ifelse(is.na(taylor_album_songs$instrumentalness),
+    median(taylor_album_songs$instrumentalness, na.rm = TRUE),
+    taylor_album_songs$instrumentalness)
+taylor_album_songs$duration_ms <-ifelse(is.na(taylor_album_songs$duration_ms),
+    median(taylor_album_songs$duration_ms, na.rm = TRUE),
+    taylor_album_songs$duration_ms)
+taylor_album_songs$explicit <-ifelse(is.na(taylor_album_songs$explicit),
+    median(taylor_album_songs$explicit, na.rm = TRUE),
+    taylor_album_songs$explicit)
+taylor_album_songs$valence <-ifelse(is.na(taylor_album_songs$valence),
+    median(taylor_album_songs$valence, na.rm = TRUE),
+    taylor_album_songs$valence)
+taylor_album_songs$tempo <-ifelse(is.na(taylor_album_songs$tempo),
+    median(taylor_album_songs$tempo, na.rm = TRUE),
+    taylor_album_songs$tempo)
+summary(taylor_album_songs)
+```
+
+Selecting the specific columns of interest and dropping other columns
+
+```{r}
+taylor_album_songs <- select(taylor_album_songs, valence, explicit, danceability, acousticness, instrumentalness, energy,loudness, album_name, tempo)
+summary(taylor_album_songs)
+```
+
+Grouping by album and printing the mean of different categories for songs in that album
+
+```{r}
+taylor_album_songs %>%
+  group_by(album_name) %>%
+  summarise(mean(energy),
+            mean(valence),
+            mean(acousticness),
+            mean(danceability))
+
+```
+
+Showing a histogram of the energy of different albums
+
+```{r}
+ggplot(taylor_album_songs, aes(x = energy,
+                               color = album_name)) +
+  geom_histogram() 
+
+```
+Trying a scatter plot correlating valence (x-axis) and energy (y-axis)
+
+```{r}
+ggplot(taylor_album_songs, aes(x = valence,
+                               y = energy,
+                               color = album_name)) +
+  geom_point()
+```
+#### Use Statistical Analysis to Determine if All Songs Sound the Same 
+
+```{r}
+summary(taylor_album_songs)
+```
+First Creating a New Data frame based on song dance-ability
+```{r}
+weight <- c(taylor_album_songs$danceability)
+group <- c(taylor_album_songs$album_name)
+taylor_danceability <- data.frame(weight, group)
+print(taylor_danceability)
+```
+
+
+```{r}
+
+p <- ggboxplot(taylor_danceability, x = "group", y = "weight")
+p + rotate_x_text()
+```
+
+Statistical Test measuring difference between medians of the groups (e.g. albums)
+```{r}
+kruskal.test(weight ~ group, data = taylor_danceability)
+```
+Low p-value indicates we can reject the null hypothesis that the medians of all the groups are the same. There is a statistically significant difference between at least two groups for dance-ability!
+
+#### Apply this Method for Other Categories
+Note: valence = how positive a song sounds according to Spotify
+```{r}
+weight <- c(taylor_album_songs$valence)
+group <- c(taylor_album_songs$album_name)
+taylor_valence <- data.frame(weight, group)
+print(taylor_valence)
+```
+```{r}
+
+p <- ggboxplot(taylor_valence, x = "group", y = "weight")
+p + rotate_x_text()
+```
+
+There is not as much of a statistically significant difference, but p-value is still less than 0.05 
+```{r}
+kruskal.test(weight ~ group, data = taylor_valence)
+```
+```{r}
+weight <- c(taylor_album_songs$tempo)
+group <- c(taylor_album_songs$album_name)
+taylor_tempo <- data.frame(weight, group)
+print(taylor_tempo)
+```
+
+```{r}
+
+p <- ggboxplot(taylor_tempo, x = "group", y = "weight")
+p + rotate_x_text()
+```
+
+NOT a statistically significant difference!
+```{r}
+kruskal.test(weight ~ group, data = taylor_tempo)
+```
+```{r}
+weight <- c(taylor_album_songs$energy)
+group <- c(taylor_album_songs$album_name)
+taylor_energy <- data.frame(weight, group)
+print(taylor_energy)
+```
+
+```{r}
+
+p <- ggboxplot(taylor_energy, x = "group", y = "weight")
+p + rotate_x_text()
+```
+
+```{r}
+kruskal.test(weight ~ group, data = taylor_energy)
+```
